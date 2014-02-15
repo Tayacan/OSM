@@ -38,6 +38,13 @@
 #define BUENOS_PROC_PROCESS
 
 typedef int process_id_t;
+typedef enum {
+    RUNNING,
+    READY,
+    ZOMBIE,
+    DEAD,
+    SLEEPING
+} process_state_t;
 
 void process_start(const char *executable);
 
@@ -49,8 +56,11 @@ void process_start(const char *executable);
 #define PROCESS_MAX_PROCESSES 32
 
 typedef struct {
-  /* STUB: Put something here. */
-  int dummy; /* Remove this. */
+    /* name of executable */
+    char *executable;
+
+    /* state */
+    process_state_t state;
 } process_control_block_t;
 
 /* Initialize the process table.  This must be called during kernel

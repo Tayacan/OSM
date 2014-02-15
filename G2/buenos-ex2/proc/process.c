@@ -52,6 +52,21 @@
 
 process_control_block_t process_table[PROCESS_MAX_PROCESSES];
 
+process_id_t next_pid; /* never read directly - use new_pid() */
+process_id_t new_pid(void) {
+    if(next_pid >= PROCESS_MAX_PROCESSES) {
+        next_pid = 0;
+    }
+
+    while(process_table[next_pid] != NULL) {
+        next_pid++;
+        if(next_pid == PROCESS_MAX_PROCESSES) {
+            return -1;
+        }
+    }
+    return next_pid;
+}
+
 /**
  * Starts one userland process. The thread calling this function will
  * be used to run the process and will therefore never return from
@@ -189,13 +204,20 @@ void process_start(const char *executable)
 }
 
 void process_init() {
-  KERNEL_PANIC("Not implemented.");
+    next_pid = 0;
 }
 
 process_id_t process_spawn(const char *executable) {
-  executable = executable;
-  KERNEL_PANIC("Not implemented.");
-  return 0; /* Dummy */
+    process_id_t pid = new_pid();
+    process_control_block_t pcb;
+    
+    pcp.executable = executable;
+    pcb.state = READY;
+
+    process_table[pid] = pcb;
+
+    KERNEL_PANIC("Unfinished implementation.");
+    return pid;
 }
 
 /* Stop the process and the thread it runs in. Sets the return value as well */

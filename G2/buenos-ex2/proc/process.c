@@ -40,6 +40,7 @@
 #include "kernel/assert.h"
 #include "kernel/interrupt.h"
 #include "kernel/config.h"
+#include "kernel/spinlock.h"
 #include "fs/vfs.h"
 #include "drivers/yams.h"
 #include "vm/vm.h"
@@ -52,11 +53,14 @@
 
 process_control_block_t process_table[PROCESS_MAX_PROCESSES];
 
+/* lock that must be held while accessing the process table. */
+spinlock_t process_table_lock;
+
 process_id_t next_pid; /* never read directly - use new_pid() */
 process_id_t new_pid(void) {
     process_id_t prev_id = next_pid;
 
-    while(&process_table[next_pid] != NULL) {
+    while(process_table[next_pid].state != FREE) {
         next_pid++;
         if(next_pid >= PROCESS_MAX_PROCESSES) {
             next_pid = 0;
@@ -80,7 +84,7 @@ process_id_t new_pid(void) {
  * @executable The name of the executable to be run in the userland
  * process
  */
-void process_start(const char *executable)
+void process_start(const process_id_t pid)
 {
     thread_table_t *my_entry;
     pagetable_t *pagetable;
@@ -89,12 +93,14 @@ void process_start(const char *executable)
     uint32_t stack_bottom;
     elf_info_t elf;
     openfile_t file;
+    process_control_block_t pcb;
 
     int i;
 
     interrupt_status_t intr_status;
 
     my_entry = thread_get_current_thread_entry();
+    pcb = process_table[pid]; // TODO lock
 
     /* If the pagetable of this thread is not NULL, we are trying to
        run a userland process for a second time in the same thread.
@@ -108,7 +114,7 @@ void process_start(const char *executable)
     my_entry->pagetable = pagetable;
     _interrupt_set_state(intr_status);
 
-    file = vfs_open((char *)executable);
+    file = vfs_open((char *)pcb.executable);
     /* Make sure the file existed and was a valid ELF file */
     KERNEL_ASSERT(file >= 0);
     KERNEL_ASSERT(elf_parse_header(&elf, file));
@@ -205,7 +211,13 @@ void process_start(const char *executable)
 }
 
 void process_init() {
+    int i;
     next_pid = 0;
+    for(i = 0; i < PROCESS_MAX_PROCESSES; i++) {
+        process_table[i].state = FREE;
+    }
+
+    spinlock_reset(&process_table_lock);
 }
 
 process_id_t process_spawn(const char *executable) {

@@ -42,11 +42,11 @@ typedef enum {
     RUNNING,
     READY,
     ZOMBIE,
-    DEAD,
+    FREE,
     SLEEPING
 } process_state_t;
 
-void process_start(const char *executable);
+void process_start(const process_id_t pid);
 
 #define USERLAND_STACK_TOP 0x7fffeffc
 

@@ -54,13 +54,14 @@ process_control_block_t process_table[PROCESS_MAX_PROCESSES];
 
 process_id_t next_pid; /* never read directly - use new_pid() */
 process_id_t new_pid(void) {
-    if(next_pid >= PROCESS_MAX_PROCESSES) {
-        next_pid = 0;
-    }
+    process_id_t prev_id = next_pid;
 
-    while(process_table[next_pid] != NULL) {
+    while(&process_table[next_pid] != NULL) {
         next_pid++;
-        if(next_pid == PROCESS_MAX_PROCESSES) {
+        if(next_pid >= PROCESS_MAX_PROCESSES) {
+            next_pid = 0;
+        }
+        if(next_pid == prev_id) {
             return -1;
         }
     }
@@ -211,7 +212,7 @@ process_id_t process_spawn(const char *executable) {
     process_id_t pid = new_pid();
     process_control_block_t pcb;
     
-    pcp.executable = executable;
+    pcb.executable = executable;
     pcb.state = READY;
 
     process_table[pid] = pcb;

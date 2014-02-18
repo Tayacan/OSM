@@ -57,7 +57,7 @@ void process_start(const char *executable);
 
 typedef struct {
     /* name of executable */
-    char *executable;
+    const char *executable;
 
     /* state */
     process_state_t state;

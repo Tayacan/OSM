@@ -37,6 +37,8 @@
 #ifndef BUENOS_PROC_PROCESS
 #define BUENOS_PROC_PROCESS
 
+#define MAX_NAME_LENGTH 20
+
 typedef int process_id_t;
 typedef enum {
     RUNNING,
@@ -46,7 +48,7 @@ typedef enum {
     SLEEPING
 } process_state_t;
 
-void process_start(const process_id_t pid);
+void process_start(const char *executable);
 
 #define USERLAND_STACK_TOP 0x7fffeffc
 
@@ -57,10 +59,13 @@ void process_start(const process_id_t pid);
 
 typedef struct {
     /* name of executable */
-    const char *executable;
+    char executable[MAX_NAME_LENGTH];
 
     /* state */
     process_state_t state;
+
+    /* return value */
+    int retval;
 } process_control_block_t;
 
 /* Initialize the process table.  This must be called during kernel

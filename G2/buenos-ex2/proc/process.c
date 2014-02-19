@@ -41,6 +41,7 @@
 #include "kernel/interrupt.h"
 #include "kernel/config.h"
 #include "kernel/spinlock.h"
+#include "kernel/sleepq.h"
 #include "fs/vfs.h"
 #include "drivers/yams.h"
 #include "vm/vm.h"
@@ -72,6 +73,10 @@ process_id_t new_pid(void) {
     return next_pid;
 }
 
+void process_exec(uint32_t pid) {
+    thread_get_current_thread_entry()->process_id = pid;
+    process_start(process_table[pid].executable);
+}
 /**
  * Starts one userland process. The thread calling this function will
  * be used to run the process and will therefore never return from
@@ -84,7 +89,7 @@ process_id_t new_pid(void) {
  * @executable The name of the executable to be run in the userland
  * process
  */
-void process_start(const process_id_t pid)
+void process_start(const char *executable)
 {
     thread_table_t *my_entry;
     pagetable_t *pagetable;
@@ -93,14 +98,12 @@ void process_start(const process_id_t pid)
     uint32_t stack_bottom;
     elf_info_t elf;
     openfile_t file;
-    process_control_block_t pcb;
 
     int i;
 
     interrupt_status_t intr_status;
 
     my_entry = thread_get_current_thread_entry();
-    pcb = process_table[pid]; // TODO lock
 
     /* If the pagetable of this thread is not NULL, we are trying to
        run a userland process for a second time in the same thread.
@@ -114,7 +117,7 @@ void process_start(const process_id_t pid)
     my_entry->pagetable = pagetable;
     _interrupt_set_state(intr_status);
 
-    file = vfs_open((char *)pcb.executable);
+    file = vfs_open((char *)executable);
     /* Make sure the file existed and was a valid ELF file */
     KERNEL_ASSERT(file >= 0);
     KERNEL_ASSERT(elf_parse_header(&elf, file));
@@ -212,6 +215,7 @@ void process_start(const process_id_t pid)
 
 void process_init() {
     int i;
+
     next_pid = 0;
     for(i = 0; i < PROCESS_MAX_PROCESSES; i++) {
         process_table[i].state = FREE;
@@ -221,28 +225,56 @@ void process_init() {
 }
 
 process_id_t process_spawn(const char *executable) {
+    int i;
+    TID_t tid;
+
+    spinlock_acquire( &process_table_lock );
     process_id_t pid = new_pid();
-    process_control_block_t pcb;
     
-    pcb.executable = executable;
-    pcb.state = READY;
+    process_table[pid].state = READY;
+    for(i = 0; i < MAX_NAME_LENGTH && executable[i] != '\0'; i++) {
+        process_table[pid].executable[i] = executable[i];
+    }
+    spinlock_release( &process_table_lock );
 
-    process_table[pid] = pcb;
+    tid = thread_create(process_exec, pid);
+    thread_run(tid);
 
-    KERNEL_PANIC("Unfinished implementation.");
     return pid;
 }
 
 /* Stop the process and the thread it runs in. Sets the return value as well */
 void process_finish(int retval) {
-  retval=retval;
-  KERNEL_PANIC("Not implemented.");
+    _interrupt_disable();
+    spinlock_acquire( &process_table_lock );
+
+    process_id_t pid = process_get_current_process();
+    process_table[pid].retval = retval;
+    process_table[pid].state = ZOMBIE;
+    sleepq_wake_all( &process_table[pid] );
+
+    spinlock_release( &process_table_lock );
+    _interrupt_enable();
 }
 
 int process_join(process_id_t pid) {
-  pid=pid;
-  KERNEL_PANIC("Not implemented.");
-  return 0; /* Dummy */
+    int retval;
+
+    _interrupt_disable();
+    spinlock_acquire( &process_table_lock );
+
+    while(process_table[pid].state != ZOMBIE) {
+        sleepq_add(&process_table[pid]);
+        spinlock_release( &process_table_lock );
+        thread_switch();
+        spinlock_acquire( &process_table_lock );
+    }
+
+    retval = process_table[pid].retval;
+
+    spinlock_release( &process_table_lock );
+    _interrupt_enable();
+    return retval;
 }
 
 

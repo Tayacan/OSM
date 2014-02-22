@@ -102,14 +102,14 @@ void syscall_handle(context_t *user_context)
         break;
     case SYSCALL_EXEC:
         user_context->cpu_regs[MIPS_REGISTER_V0] =
-            process_spawn((char *)A0);
+            process_spawn((char *)A1);
         break;
     case SYSCALL_EXIT:
-        process_finish(A0);
+        process_finish(A1);
         break;
     case SYSCALL_JOIN:
         user_context->cpu_regs[MIPS_REGISTER_V0] =
-            process_join(A0);
+            process_join(A1);
         break;
     default:
         KERNEL_PANIC("Unhandled system call\n");

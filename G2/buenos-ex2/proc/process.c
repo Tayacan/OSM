@@ -266,8 +266,9 @@ void process_finish(int retval) {
 
 int process_join(process_id_t pid) {
     int retval;
+    interrupt_status_t intr_status;
 
-    _interrupt_disable();
+    intr_status = _interrupt_disable();
     spinlock_acquire( &process_table_lock );
 
     while(process_table[pid].state != ZOMBIE) {
@@ -280,7 +281,7 @@ int process_join(process_id_t pid) {
     retval = process_table[pid].retval;
 
     spinlock_release( &process_table_lock );
-    _interrupt_enable();
+    _interrupt_set_state(intr_status);
     return retval;
 }
 

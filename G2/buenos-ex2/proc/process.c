@@ -245,6 +245,8 @@ process_id_t process_spawn(const char *executable) {
 
 /* Stop the process and the thread it runs in. Sets the return value as well */
 void process_finish(int retval) {
+    thread_table_t *thr;
+
     _interrupt_disable();
     spinlock_acquire( &process_table_lock );
 
@@ -255,6 +257,11 @@ void process_finish(int retval) {
 
     spinlock_release( &process_table_lock );
     _interrupt_enable();
+
+    thr = thread_get_current_thread_entry();
+    vm_destroy_pagetable(thr->pagetable);
+    thr->pagetable = NULL;
+    thread_finish();
 }
 
 int process_join(process_id_t pid) {

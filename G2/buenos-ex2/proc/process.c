@@ -231,7 +231,7 @@ process_id_t process_spawn(const char *executable) {
     spinlock_acquire( &process_table_lock );
     process_id_t pid = new_pid();
     
-    process_table[pid].state = READY;
+    process_table[pid].state = RUNNING;
     for(i = 0; i < MAX_NAME_LENGTH && executable[i] != '\0'; i++) {
         process_table[pid].executable[i] = executable[i];
     }
@@ -279,6 +279,7 @@ int process_join(process_id_t pid) {
     }
 
     retval = process_table[pid].retval;
+    process_table[pid].state = FREE;
 
     spinlock_release( &process_table_lock );
     _interrupt_set_state(intr_status);

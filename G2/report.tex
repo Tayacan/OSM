@@ -87,8 +87,9 @@ continuesly check whether the target process has finished and become a
 zombie. If it has not, we will put the current process on sleep,
 release the lock and switch to another tread. When we return from
 this, we will then reacquire the lock on the process table. When the
-target process terminates, we will retrive the return value, release
-the lock and restore the nterup status to previously, before returning
+target process terminates, we will retrive the return value, free the
+targets process id, release
+the lock and restore the interup status to previously, before returning
 the return value.
 
 \subsection{\texttt{process\_finish}}

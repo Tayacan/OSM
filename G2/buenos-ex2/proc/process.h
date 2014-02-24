@@ -42,7 +42,6 @@
 typedef int process_id_t;
 typedef enum {
     RUNNING,
-    READY,
     ZOMBIE,
     FREE,
     SLEEPING

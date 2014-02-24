@@ -1,0 +1,66 @@
+\documentclass{article}
+%\usepackage{msmath}
+\usepackage{amssymb, amsmath}
+\usepackage[pdftex]{graphicx}
+\usepackage{listings}              % code insert
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{wrapfig}
+
+\lstset{
+    breaklines = true,
+    numbers = left,
+    stepnumber = 1,
+    numberstyle=\color{black},
+    showstringspaces=false,
+    language=C,
+    frame=rlTB,
+    rulecolor= \color{blue},
+    basicstyle=\scriptsize\ttfamily\color{red!80!black},
+      keywordstyle=\bfseries\color{blue},
+      commentstyle=\color{green!40!black},
+      identifierstyle=\ttfamily\color{black},
+      stringstyle=\color{yellow!65!black},
+}
+
+\newcommand{\ssection}[1]{
+\addcontentsline{toc}{section}{#1}
+\section*{#1}}
+
+
+\title{G2 - report}
+\author{Ask Neve Gamby \& Maya Saietz}
+
+\begin{document}
+\maketitle
+\section{Types and functions for userland processes}
+
+\subsection{Process control blocks}
+Process control blocks are defined in \texttt{proc/process.h} as the type \texttt{process\_control\_block\_t}. The type is a struct, which contains the following members:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+    \hline
+    \texttt{char executable[MAX\_NAME\_LENGTH]} & The name of the program that this process runs. \\\hline
+               \texttt{process\_state\_t state} & The state of the process (\texttt{RUNNING}, \texttt{ZOMBIE} etc.) \\\hline
+                            \texttt{int retval} & Only used when the process has called \texttt{process\_finish}. Contains the return value of the process. A negative value indicates an error. \\\hline
+                 \texttt{process\_id\_t parent} & The process ID of the process that spawned this one. \\\hline
+\end{tabular}
+
+\subsection{The process table}
+The process table is an array of \texttt{process\_control\_block\_t}'s. The process ID of a given process is its index in the process table.
+
+We also have a \texttt{spinlock process\_table\_lock}, which must be held whenever we try to access the process table.
+
+\subsection{\texttt{process\_init}}
+This function is called during startup. It sets the \texttt{state} variable of every \texttt{process\_control\_block\_t} in the process table to \texttt{FREE}.
+
+We don't use the spinlock in this function, because at this point, no processes have been started or can be started.
+
+\subsection{\texttt{process\_spawn}}
+\subsection{\texttt{process\_join}}
+\subsection{\texttt{process\_finish}}
+
+\section{System calls for userland processes}
+Implementing the system calls was just a matter of making thin wrappers around the functions implemented in task 1. \texttt{syscall\_exec} is a wrapper \texttt{process\_spawn}, \texttt{syscall\_join} is a wrapper for \texttt{process\_join}, and \texttt{syscall\_exit} is a wrapper for \texttt{process\_finish}.
+
+\end{document}

@@ -133,6 +133,8 @@ void init_startup_thread(uint32_t arg)
 
     kprintf("Starting initial program '%s'\n", bootargs_get("initprog"));
 
+    thread_get_current_thread_entry()->process_id = -1;
+
     pid = process_spawn(bootargs_get("initprog"));
     process_join(pid);
     //process_start(bootargs_get("initprog"));

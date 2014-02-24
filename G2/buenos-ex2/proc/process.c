@@ -57,20 +57,14 @@ process_control_block_t process_table[PROCESS_MAX_PROCESSES];
 /* lock that must be held while accessing the process table. */
 spinlock_t process_table_lock;
 
-process_id_t next_pid; /* never read directly - use new_pid() */
 process_id_t new_pid(void) {
-    process_id_t prev_id = next_pid;
-
-    while(process_table[next_pid].state != FREE) {
-        next_pid++;
-        if(next_pid >= PROCESS_MAX_PROCESSES) {
-            next_pid = 0;
-        }
-        if(next_pid == prev_id) {
-            return -1;
+    int i;
+    for(i = 0; i < PROCESS_MAX_PROCESSES, i++) {
+        if(process_table[i].state == FREE) {
+            return i;
         }
     }
-    return next_pid;
+    return -1; // There was no free process ID
 }
 
 void process_exec(uint32_t pid) {
@@ -230,7 +224,11 @@ process_id_t process_spawn(const char *executable) {
 
     spinlock_acquire( &process_table_lock );
     process_id_t pid = new_pid();
-    
+
+    if(pid < 0) {
+        KERNEL_PANIC("No free process ID.");
+    }
+
     process_table[pid].state = RUNNING;
     for(i = 0; i < MAX_NAME_LENGTH && executable[i] != '\0'; i++) {
         process_table[pid].executable[i] = executable[i];

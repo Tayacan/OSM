@@ -45,6 +45,17 @@ Process control blocks are defined in \texttt{proc/process.h} as the type \textt
                             \texttt{int retval} & Only used when the process has called \texttt{process\_finish}. Contains the return value of the process. A negative value indicates an error. \\\hline
                  \texttt{process\_id\_t parent} & The process ID of the process that spawned this one. \\\hline
 \end{tabular}
+\vspace{1cm}
+
+The \texttt{process\_state\_t} type is an \texttt{enum} containing the following values:
+
+\begin{tabular}{|p{3cm}|p{9cm}|}
+    \hline
+    \texttt{RUNNING} & An active process. This does NOT mean that the process is actually executing right now, just that there is a thread which owns it and sometimes runs it. \\\hline
+       \texttt{FREE} & This process ID is free. A new process can go ahead and use it. \\\hline
+     \texttt{ZOMBIE} & This process has finished running and is waiting to be joined. \\\hline
+   \texttt{SLEEPING} & The thread that owns this process is sleeping. \\\hline
+\end{tabular}
 
 \subsection{The process table}
 The process table is an array of \texttt{process\_control\_block\_t}'s. The process ID of a given process is its index in the process table.
@@ -57,8 +68,20 @@ This function is called during startup. It sets the \texttt{state} variable of e
 We don't use the spinlock in this function, because at this point, no processes have been started or can be started.
 
 \subsection{\texttt{process\_spawn}}
+\texttt{process\_spawn} first find the next free process ID by calling the function \texttt{new\_pid}. If the process table is full, it kernel panics.
+
+Once an ID has been found, it sets the state to \texttt{RUNNING}, copies the filename to the process table entry, and starts a thread with the function \texttt{process\_exec}, and the ID as argument. All of this is of course done with \texttt{process\_table\_lock} held.
+
+\texttt{process\_exec} is a wrapper around \texttt{process\_start}. It sets the thread's \texttt{process\_id} to the given ID, and then runs \texttt{process\_start} with the name of the executable.
+
 \subsection{\texttt{process\_join}}
+
+
 \subsection{\texttt{process\_finish}}
+
+\texttt{process\_finish} sets the \texttt{retval} of the current process to its argument and the state to \texttt{ZOMBIE}, and then wakes any threads that might have been sleeping on the current process. Finally, it destroys the current thread's pagetable and calls \texttt{thread\_finish}.
+
+Because the sleep queue is used, we disable interrupts in the beginning of the function, and restore the interrupt status as soon as we've released the process table lock.
 
 \section{System calls for userland processes}
 Implementing the system calls was just a matter of making thin wrappers around the functions implemented in task 1. \texttt{syscall\_exec} is a wrapper \texttt{process\_spawn}, \texttt{syscall\_join} is a wrapper for \texttt{process\_join}, and \texttt{syscall\_exit} is a wrapper for \texttt{process\_finish}.

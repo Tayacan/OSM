@@ -75,7 +75,21 @@ Once an ID has been found, it sets the state to \texttt{RUNNING}, copies the fil
 \texttt{process\_exec} is a wrapper around \texttt{process\_start}. It sets the thread's \texttt{process\_id} to the given ID, and then runs \texttt{process\_start} with the name of the executable.
 
 \subsection{\texttt{process\_join}}
+\texttt{process_join} first turn off interups, and acquaire a lock on
+the process table. It then checks whether the process it tries to join
+has the current process as parent, and stops returing $-1$ if it is
+not, thereby indicating an error (though this would be indestinguable from the
+program returning $-1$). If it stops here it will release the lock and
+return the interup status to previously.
 
+If the target process is a child we will enter a loop, where we
+continuesly check whether the target process has finished and become a
+zombie. If it has not, we will put the current process on sleep,
+release the lock and switch to another tread. When we return from
+this, we will then reacquire the lock on the process table. When the
+target process terminates, we will retrive the return value, release
+the lock and restore the nterup status to previously, before returning
+the return value.
 
 \subsection{\texttt{process\_finish}}
 

@@ -275,8 +275,9 @@ int process_join(process_id_t pid) {
     spinlock_acquire( &process_table_lock );
 
     if(process_table[pid].parent != process_get_current_process()) {
-      spinlock_release( &process_table_lock);
-      return -1;
+        spinlock_release( &process_table_lock);
+        _interrupt_set_state(intr_status);
+        return -1;
     }
 
 

@@ -59,7 +59,7 @@ spinlock_t process_table_lock;
 
 process_id_t new_pid(void) {
     int i;
-    for(i = 0; i < PROCESS_MAX_PROCESSES, i++) {
+    for(i = 0; i < PROCESS_MAX_PROCESSES; i++) {
         if(process_table[i].state == FREE) {
             return i;
         }
@@ -210,7 +210,6 @@ void process_start(const char *executable)
 void process_init() {
     int i;
 
-    next_pid = 0;
     for(i = 0; i < PROCESS_MAX_PROCESSES; i++) {
         process_table[i].state = FREE;
     }

@@ -232,6 +232,7 @@ process_id_t process_spawn(const char *executable) {
     process_id_t pid = new_pid();
     
     process_table[pid].state = READY;
+    process_table[pid].parrent = process_get_current_process();
     for(i = 0; i < MAX_NAME_LENGTH && executable[i] != '\0'; i++) {
         process_table[pid].executable[i] = executable[i];
     }
@@ -242,6 +243,8 @@ process_id_t process_spawn(const char *executable) {
 
     return pid;
 }
+
+
 
 /* Stop the process and the thread it runs in. Sets the return value as well */
 void process_finish(int retval) {
@@ -268,8 +271,16 @@ int process_join(process_id_t pid) {
     int retval;
     interrupt_status_t intr_status;
 
+    
+
     intr_status = _interrupt_disable();
     spinlock_acquire( &process_table_lock );
+
+    if(process_table[pid].parrent != process_get_current_process()) {
+      spinlock_release( &process_table_lock);
+      return -1;
+    }
+
 
     while(process_table[pid].state != ZOMBIE) {
         sleepq_add(&process_table[pid]);

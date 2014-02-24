@@ -4,7 +4,7 @@
 
 #include "tests/lib.h"
 
-static const char prog[] = "[arkimedes]calc"; /* The program to start. */
+static const char prog[] = "[arkimedes]illegal"; /* The program to start. */
 
 int main(void)
 {

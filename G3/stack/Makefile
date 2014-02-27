@@ -1,5 +1,5 @@
 CC = gcc
-FLAGS = -pthread -g -Wall -Werror -pedantic -std=c99
+FLAGS = -lpthread -g -Wall -Werror -pedantic -std=c99
 
 RUN = $(CC) $(FLAGS)
 

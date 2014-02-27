@@ -1,4 +1,5 @@
 #include "stack.h"
+#include <stdlib.h>
 
 #define LOCK pthread_mutex_lock
 #define UNLOCK pthread_mutex_unlock
@@ -43,10 +44,10 @@ void* stack_pop(stack_t* stack)
     UNLOCK(&stack->lock);
     return NULL;
   }
-  temp = stack->top;
+  tmp = stack->top;
   stack->top = tmp->next;
   result = tmp->content;
-  free(temp); 
+  free(tmp); 
   UNLOCK(&stack->lock);
   return result;
 }

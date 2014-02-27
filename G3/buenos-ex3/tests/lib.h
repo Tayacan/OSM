@@ -77,6 +77,11 @@ uint32_t _syscall(uint32_t syscall_num, uint32_t a1, uint32_t a2, uint32_t a3);
 
 void syscall_halt(void);
 
+usr_sem_t* syscall_sem_open(char const *name, int value);
+int syscall_sem_p(user_sem_t *handle);
+int syscall_sem_v(user_sem_t *handle);
+int syscall_sem_destroy(usr_sem_t *handle);
+
 pid_t syscall_exec(const char *filename);
 pid_t syscall_execp(const char *filename, int argc, const char **argv);
 int syscall_join(pid_t pid);

@@ -51,6 +51,36 @@ void syscall_halt(void)
   _syscall(SYSCALL_HALT, 0, 0, 0);
 }
 
+/* Return a handle to the userland semaphore identified by @name.
+ *
+ * If @value is zero or positive, create a new semaphore. Return
+ * NULL if a semaphore of that name already exists.
+ *
+ * If @value is negative, return an already existing semaphore.
+ * Return NULL if it does not exist.
+ * */
+usr_sem_t* syscall_sem_open(char const *name, int value)
+{
+    return (usr_sem_t*)_syscall(SYSCALL_SEM_OPEN, (uint32_t)name, value, 0);
+}
+
+/* Procure the semaphore @handle. */
+int syscall_sem_p(user_sem_t *handle)
+{
+    return _syscall(SYSCALL_SEM_P, (uint32_t) handle, 0, 0);
+}
+
+/* Vacate the semaphore @handle. */
+int syscall_sem_v(user_sem_t *handle)
+{
+    return _syscall(SYSCALL_SEM_V, (uint32_t) handle, 0, 0);
+}
+
+/* Destroy the semaphore @handle. */
+int syscall_sem_destroy(usr_sem_t *handle)
+{
+    return _syscall(SYSCALL_SEM_DESTROY, (uint32_t) handle, 0, 0);
+}
 
 /* Load the file indicated by 'filename' as a new process and execute
  * it. Returns the process ID of the created process. Negative values

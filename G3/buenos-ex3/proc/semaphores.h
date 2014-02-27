@@ -4,11 +4,11 @@
 
 #include "kernel/semaphore.h"
 
-typedef usr_sem_t void;
+typedef void usr_sem_t;
 
 typedef struct 
 {
-  char const* name;
+  char* name;
   int num_stuck;
   semaphore_t* sem;
 } usr_sem_entry;
@@ -18,7 +18,7 @@ typedef struct
   int size;
   int max_length_name;
   semaphore_t* lock;
-  struct usr_sem_entry* entries;
+  usr_sem_entry* entries;
 } usr_sem_contain;
 
 

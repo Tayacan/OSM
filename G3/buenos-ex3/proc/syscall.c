@@ -44,6 +44,7 @@
 #include "drivers/gcd.h"
 #include "fs/vfs.h"
 #include "kernel/thread.h"
+#include "proc/semaphores.h"
 
 int syscall_write(uint32_t fd, char *s, int len)
 {
@@ -115,6 +116,18 @@ void syscall_handle(context_t *user_context)
       break;
     case SYSCALL_WRITE:
       V0 = syscall_write(A1, (char *)A2, A3);
+      break;
+    case  SYSCALL_SEM_OPEN:
+      V0 = (int) usr_sem_open((char const*) A1, A2);
+      break;
+    case  SYSCALL_SEM_PROCURE:
+      V0 = usr_sem_p((usr_sem_t*) A1);
+      break;
+    case  SYSCALL_SEM_VACATE:
+      V0 = usr_sem_v((usr_sem_t*) A1);
+      break;
+    case  SYSCALL_SEM_DESTORY:
+      V0 = usr_sem_destory((usr_sem_t*) A1);
       break;
     default:
       KERNEL_PANIC("Unhandled system call\n");

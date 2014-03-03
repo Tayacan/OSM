@@ -16,6 +16,9 @@ stack.o: stack.c stack.h
 
 all: matrix
 
+run: matrix
+	./matrix
+
 clean:
 	rm -f *.o
 	rm -f matrix

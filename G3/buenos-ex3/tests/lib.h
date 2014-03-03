@@ -63,6 +63,7 @@ typedef uint8_t byte;
 typedef int32_t ssize_t;
 typedef uint32_t size_t;
 typedef int32_t pid_t;
+typedef void usr_sem_t;
 
 /* Filehandles for input and output */
 #define stdin 0
@@ -76,11 +77,6 @@ uint32_t _syscall(uint32_t syscall_num, uint32_t a1, uint32_t a2, uint32_t a3);
 /* The library functions which are just wrappers to the _syscall function. */
 
 void syscall_halt(void);
-
-usr_sem_t* syscall_sem_open(char const *name, int value);
-int syscall_sem_p(user_sem_t *handle);
-int syscall_sem_v(user_sem_t *handle);
-int syscall_sem_destroy(usr_sem_t *handle);
 
 pid_t syscall_exec(const char *filename);
 pid_t syscall_execp(const char *filename, int argc, const char **argv);
@@ -98,11 +94,10 @@ int syscall_delete(const char *filename);
 int syscall_fork(void (*func)(int), int arg);
 void *syscall_memlimit(void *heap_end);
 
-typedef void usr_sem_t;
-
 usr_sem_t* syscall_sem_open(char const* name, int value);
 int syscall_sem_p(usr_sem_t* handle);
 int syscall_sem_v(usr_sem_t* handle);
+int syscall_sem_destroy(usr_sem_t *handle);
 
 #ifdef PROVIDE_STRING_FUNCTIONS
 size_t strlen(const char *s);

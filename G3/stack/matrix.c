@@ -1,11 +1,9 @@
 #include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 
 #define DEFAULT_SIZE 128
-#define MAX_THREADS 64
+#define DEFAULT_THREADS 64
 
 int size;
 
@@ -120,7 +118,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        nthreads = MAX_THREADS;
+        nthreads = DEFAULT_THREADS;
     }
     printf("Multiplying random square matrices of size %d x %d\n",
          size, size);
@@ -165,7 +163,6 @@ int main(int argc, char** argv)
     elapsed = t2.tv_sec - t1.tv_sec;
     elapsed += (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
     printf("Time spent: %F\n", elapsed);
-    //printf("stuff %ld\n", _POSIX_TIMERS);
 
     // Free ALL THE THINGS!
     free(threads);

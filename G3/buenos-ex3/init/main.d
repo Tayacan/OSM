@@ -9,4 +9,5 @@ init/main.o: init/main.c drivers/bootargs.h drivers/device.h lib/types.h \
   drivers/yams.h kernel/panic.h kernel/scheduler.h kernel/synch.h \
   kernel/interrupt.h kernel/sleepq.h kernel/semaphore.h kernel/thread.h \
   lib/debug.h lib/libc.h lib/libc.h net/network.h lib/types.h \
-  drivers/gnd.h proc/process.h vm/vm.h vm/pagetable.h
+  drivers/gnd.h proc/process.h proc/semaphores.h kernel/semaphore.h \
+  vm/vm.h vm/pagetable.h

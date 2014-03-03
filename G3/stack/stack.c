@@ -29,7 +29,7 @@ void* stack_top(stack_t* stack)
     UNLOCK(&stack->lock);
     return NULL;
   }
-  result = stack->top;
+  result = stack->top->content;
   UNLOCK(&stack->lock);
   return result;
 }
@@ -47,7 +47,7 @@ void* stack_pop(stack_t* stack)
   tmp = stack->top;
   stack->top = tmp->next;
   result = tmp->content;
-  free(tmp); 
+  free(tmp);
   UNLOCK(&stack->lock);
   return result;
 }

@@ -24,6 +24,6 @@ int usr_sem_p(usr_sem_t* handle);
 
 int usr_sem_v(usr_sem_t* handle);
 
-int usr_sem_destory(usr_sem_t* handle);
+int usr_sem_destroy(usr_sem_t* handle);
 
 #endif

@@ -89,17 +89,17 @@ int usr_sem_p(usr_sem_t* handle)
     return -2;
   }
   semaphore_P(sem_table_lock);
-  usr_sem_entry target = sem_table[toIndex(handle)];
-  if (target.sem == NULL)
+  usr_sem_entry *target = &sem_table[toIndex(handle)];
+  if (target->sem == NULL)
   {
     semaphore_V(sem_table_lock);
     return -1;
   }
-  target.num_stuck++;
+  target->num_stuck++;
   semaphore_V(sem_table_lock);
-  semaphore_P(target.sem);
+  semaphore_P(target->sem);
   semaphore_P(sem_table_lock);
-  target.num_stuck--;
+  target->num_stuck--;
   semaphore_V(sem_table_lock);
   return 0;
 }
@@ -111,29 +111,29 @@ int usr_sem_v(usr_sem_t* handle)
     return -2;
   }
   semaphore_P(sem_table_lock);
-  usr_sem_entry target = sem_table[toIndex(handle)];
-  if (target.sem == NULL)
+  usr_sem_entry *target = &sem_table[toIndex(handle)];
+  if (target->sem == NULL)
   {
     semaphore_V(sem_table_lock);
     return -1;
   }
-  semaphore_V(target.sem);
+  semaphore_V(target->sem);
   semaphore_V(sem_table_lock);
   return 0;
 }
 
-int usr_sem_destory(usr_sem_t* handle)
+int usr_sem_destroy(usr_sem_t* handle)
 {
   if(handle == NULL)
   {
     return -2;
   }
   semaphore_P(sem_table_lock);
-  usr_sem_entry target = sem_table[toIndex(handle)];
-  if (target.num_stuck == 0)
+  usr_sem_entry *target = &sem_table[toIndex(handle)];
+  if (target->num_stuck == 0)
   {
-    semaphore_destroy(target.sem);
-    target.sem = NULL;
+    semaphore_destroy(target->sem);
+    target->sem = NULL;
     semaphore_V(sem_table_lock);
     return 0;
   }

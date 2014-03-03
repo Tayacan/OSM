@@ -4,4 +4,4 @@ proc/syscall.o: proc/syscall.c kernel/cswitch.h lib/types.h proc/syscall.h \
   drivers/yams.h drivers/gcd.h drivers/device.h fs/vfs.h drivers/gbd.h \
   lib/libc.h kernel/semaphore.h kernel/spinlock.h kernel/thread.h \
   kernel/cswitch.h vm/pagetable.h lib/libc.h vm/tlb.h proc/process.h \
-  kernel/thread.h
+  kernel/thread.h proc/semaphores.h kernel/semaphore.h

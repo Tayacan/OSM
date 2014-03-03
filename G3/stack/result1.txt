@@ -1,0 +1,240 @@
+Multiplying random square matrices of size 800 x 800
+Time spent: 6.185087
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.705140
+Multiplying random square matrices of size 800 x 800
+Time spent: 5.263867
+Multiplying random square matrices of size 800 x 800
+Time spent: 6.235811
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.506701
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.687276
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.576589
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.447602
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.577989
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.552118
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.256680
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.075776
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.313990
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.162870
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.573837
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.540269
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.708861
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.502597
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.285744
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.094720
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.621945
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.154030
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.634384
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.079752
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.635734
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.674529
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.319507
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.379848
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.883103
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.168117
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.243855
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.457869
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.207196
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.607391
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.933125
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.204961
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.730641
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.253350
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.643200
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.755074
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.697132
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.832186
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.058233
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.832238
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.419604
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.594358
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.221176
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.524240
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.419879
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.811112
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.014020
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.235569
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.377130
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.780114
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.614042
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.340251
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.053564
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.711960
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.310342
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.773296
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.927876
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.299951
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.038596
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.352249
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.616470
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.916347
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.591701
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.073666
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.536696
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.040040
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.379415
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.831400
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.500693
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.369495
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.641145
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.213783
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.040731
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.233921
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.245631
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.171564
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.956433
+Multiplying random square matrices of size 800 x 800
+Time spent: 5.090904
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.731595
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.829877
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.186671
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.401729
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.371496
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.779151
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.884192
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.229488
+Multiplying random square matrices of size 800 x 800
+Time spent: 5.428769
+Multiplying random square matrices of size 800 x 800
+Time spent: 5.644617
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.924333
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.682515
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.969985
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.147608
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.073411
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.669442
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.961257
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.904617
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.860161
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.075616
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.516795
+Multiplying random square matrices of size 800 x 800
+Time spent: 4.146190
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.072243
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.668894
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.200341
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.383529
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.159143
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.290190
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.059293
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.973838
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.857295
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.131928
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.304425
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.641017
+Multiplying random square matrices of size 800 x 800
+Time spent: 2.820711
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.438375
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.830724
+Multiplying random square matrices of size 800 x 800
+Time spent: 3.151045

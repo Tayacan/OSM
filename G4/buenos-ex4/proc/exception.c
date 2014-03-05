@@ -70,14 +70,14 @@ void user_exception_handle(int exception)
 
     switch(exception) {
     case EXCEPTION_TLBM:
-	KERNEL_PANIC("TLB Modification: not handled yet");
-	break;
+        tlb_modified_exception();
+        break;
     case EXCEPTION_TLBL:
-	KERNEL_PANIC("TLB Load: not handled yet");
-	break;
+        tlb_load_exception();
+        break;
     case EXCEPTION_TLBS:
-	KERNEL_PANIC("TLB Store: not handled yet");
-	break;
+        tlb_store_exception();
+        break;
     case EXCEPTION_ADDRL:
 	KERNEL_PANIC("Address Error Load: not handled yet");
 	break;

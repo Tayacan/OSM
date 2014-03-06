@@ -1,6 +1,6 @@
 *.o
 buenos
-buenos.map
+*.map
 *.swp
 tfstool
 *.d

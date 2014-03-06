@@ -38,20 +38,90 @@
 #include "kernel/assert.h"
 #include "vm/tlb.h"
 #include "vm/pagetable.h"
+#include "kernel/thread.h"
+
+#define DEBUG 0
 
 void tlb_modified_exception(void)
 {
+    if(DEBUG)
+    {
+        tlb_exception_state_t state;
+        int odd;
+        _tlb_get_exception_state(&state);
+
+        thread_table_t *thr = thread_get_current_thread_entry();
+        kprintf("pid = %d\n", thr->process_id);
+        kprintf("badvaddr: 0x%8.8x\n", state.badvaddr);
+        kprintf("badvpn2: 0x%8.8x\n", state.badvpn2);
+        kprintf("asid: %d\n", state.asid);
+        odd = state.badvaddr & 0x1000;
+        kprintf("odd = %d\n", odd);
+    }
+
     KERNEL_PANIC("Unhandled TLB modified exception");
+}
+
+void tlb_load_store_exception(void)
+{
+    int i;
+    int odd;
+
+    tlb_exception_state_t state;
+    tlb_entry_t *entry;
+    _tlb_get_exception_state(&state);
+    if(DEBUG)
+    {
+        kprintf("badvaddr: 0x%8.8x\n", state.badvaddr);
+        kprintf("badvpn2: 0x%8.8x\n", state.badvpn2);
+        kprintf("asid: %d\n", state.asid);
+    }
+
+    thread_table_t *thr = thread_get_current_thread_entry();
+    if(DEBUG) kprintf("pid = %d\n", thr->process_id);
+
+    odd = state.badvaddr & 0x1000;
+    if(DEBUG) kprintf("odd = %d\n", odd);
+
+    for(i = 0; i < PAGETABLE_ENTRIES; i++)
+    {
+        entry = &thr->pagetable->entries[i];
+        if(state.badvpn2 == entry->VPN2)
+        {
+            if((!odd && entry->V0) || (odd && entry->V1))
+            {
+                _tlb_write_random(entry);
+                if(state.asid == 4 && DEBUG)
+                {
+                    kprintf("Pagetable ASID: %d\n", thr->pagetable->ASID);
+                    kprintf("Entry ASID: %d\n", entry->ASID);
+                    kprintf("Thread ID: %d\n", thread_get_current_thread());
+                    //KERNEL_PANIC("ASID 4");
+                }
+
+                return;
+            }
+            else
+            {
+                if(DEBUG) kprintf("Not valid: 0x%8.8x. Odd: %d\n", entry->VPN2, odd);
+                break;
+            }
+        }
+    }
+
+    KERNEL_PANIC("ARRRGH!");
 }
 
 void tlb_load_exception(void)
 {
-    KERNEL_PANIC("Unhandled TLB load exception");
+    if(DEBUG) kwrite("load\n");
+    tlb_load_store_exception();
 }
 
 void tlb_store_exception(void)
 {
-    KERNEL_PANIC("Unhandled TLB store exception");
+    if(DEBUG) kwrite("store\n");
+    tlb_load_store_exception();
 }
 
 /**

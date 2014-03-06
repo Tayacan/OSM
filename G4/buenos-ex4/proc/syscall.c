@@ -45,6 +45,8 @@
 #include "fs/vfs.h"
 #include "kernel/thread.h"
 #include "proc/semaphores.h"
+#include "vm/pagepool.h"
+#include "vm/vm.h"
 
 int syscall_write(uint32_t fd, char *s, int len)
 {
@@ -72,6 +74,51 @@ int syscall_read(uint32_t fd, char *s, int len)
     KERNEL_PANIC("Read syscall not finished yet.");
     return 0;
   }
+}
+
+void* syscall_memlimit(void* heap_end)
+{
+    uint32_t diff, current, x;
+    uint32_t newpage, i;
+
+    process_table_t *proc = process_get_current_process_entry();
+    thread_table_t *thr = thread_get_current_thread_entry();
+    void* current_heap_end = proc->heap_end;
+    if(heap_end == NULL)
+    {
+        return current_heap_end;
+    }
+
+    if(current_heap_end > heap_end)
+    {
+        return NULL;
+    }
+
+    if(current_heap_end == heap_end)
+    {
+        return heap_end;
+    }
+
+    // do some things
+    current = (uint32_t)current_heap_end;
+    diff = (uint32_t)heap_end - current;
+    current++;
+    x = (diff >> 12) + ((diff & 0xFFF) != 0);
+    for(i = 0; i < x; i++)
+    {
+        newpage = pagepool_get_phys_page();
+        if(newpage == 0)
+        {
+            return NULL;
+        }
+        vm_map(thr->pagetable, newpage, current, 1);
+        current += 0x1000;
+    }
+    current--;
+    proc->heap_end = (void*)current;
+
+    // vm_map something
+    return proc->heap_end;
 }
 
 /**
@@ -128,6 +175,9 @@ void syscall_handle(context_t *user_context)
       break;
     case  SYSCALL_SEM_DESTROY:
       V0 = usr_sem_destroy((usr_sem_t*) A1);
+      break;
+    case SYSCALL_MEMLIMIT:
+      V0 = (int)syscall_memlimit((void*)A1);
       break;
     default:
       KERNEL_PANIC("Unhandled system call\n");

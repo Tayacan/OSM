@@ -140,6 +140,7 @@ void init_startup_thread(uint32_t arg)
 
   process_join(pid);
 
+  //KERNEL_PANIC("I want debug mode.");
   halt_kernel();
 }
 

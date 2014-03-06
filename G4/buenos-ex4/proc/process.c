@@ -167,7 +167,7 @@ void process_start(process_id_t pid)
      pages fit into the TLB. After writing proper TLB exception
      handling this call should be skipped. */
   intr_status = _interrupt_disable();
-  tlb_fill(my_entry->pagetable);
+  //tlb_fill(my_entry->pagetable);
   _interrupt_set_state(intr_status);
 
   /* Now we may use the virtual addresses of the segments. */
@@ -223,7 +223,7 @@ void process_start(process_id_t pid)
 
   /* Insert page mappings again to TLB to take read-only bits into use */
   intr_status = _interrupt_disable();
-  tlb_fill(my_entry->pagetable);
+  //tlb_fill(my_entry->pagetable);
   _interrupt_set_state(intr_status);
 
 
@@ -256,6 +256,7 @@ process_id_t process_spawn(const char* executable)
   process_table[pid].next_zombie = -1;
   process_table[pid].parent = my_pid;
   process_table[pid].children = 0;
+  process_table[pid].heap_end = 0xFFF;
 
   intr_status = _interrupt_disable();
   spinlock_acquire(&process_table_slock);

@@ -735,14 +735,14 @@ static const size_t MIN_ALLOC_SIZE = sizeof(free_block_t);
 
 free_block_t *free_list;
 
-byte heap[HEAP_SIZE];
-
 /* Initialise the heap - malloc et al won't work unless this is called
    first. */
 void heap_init()
 {
-  free_list = (free_block_t*) heap;
-  free_list->size = HEAP_SIZE;
+  void* heap_end;
+  free_list = syscall_memlimit(NULL);
+  heap_end = syscall_memlimit(++free_list);
+  free_list->size = (int)heap_end - (int)free_list + 1;
   free_list->next = NULL;
 }
 
@@ -784,6 +784,12 @@ void *malloc(size_t size) {
       return ((byte*)block)+sizeof(size_t);
     }
     /* Else, check the next block. */
+  }
+
+  if(syscall_memlimit((void*)((int)syscall_memlimit(NULL) + size)) != NULL)
+  {
+    
+    return malloc(size);
   }
 
   /* No heap space left. */

@@ -54,6 +54,12 @@ Finally, if the argument is not \texttt{NULL} and is larger than the current hea
 %
 \subsection{\texttt{malloc} and \texttt{free}}
 %
-A basic implementation of \texttt{malloc} and \texttt{free} were provided beforehand, which used a statically allocated byte array. This means that the heap could not increase in size. The changes necessary was to change this implementation to work using the new heap, which can be dynamically increased, and apply this dynamic increasing. Since no unmapping of physical pages is currently implemented, then \texttt{free} would still only be changing the data structure used by malloc on the heap. The manipulation of a heap in a byte array and on the 
+Basic implementations of \texttt{malloc} and \texttt{free} were already provided, but these used a statically allocated byte array for the heap. This meant that the heap couldn't grow dynamically. The task was to change \texttt{malloc} and \texttt{free} to use the new \texttt{syscall\_memlimit} instead.
+
+The existing implementation of \texttt{free} was actually fine -- there is no way to unmap pages in Buenos, so simply inserting the block in the list of free blocks was sufficient.
+
+The only change to \texttt{malloc} is in the end of the function. Before, if there was no free block of sufficient size, \texttt{malloc} would simply give up and return \texttt{NULL}. Instead, the new version calls \texttt{syscall\_memlimit}, trying to allocate the needed block. If this succeeds, it calls itself recursively with the same argument. If not, it returns \texttt{NULL}.
+
+The real change is actually in the function \texttt{heap\_init}. Before, \texttt{heap\_init} used the byte array \texttt{heap} to initialize \texttt{free\_list}. In the new version, \texttt{heap} is gone, and we use \texttt{syscall\_memlimit} instead. We start by setting \texttt{free\_list} to point at the first address in the potential heap. Then we call \texttt{syscall\_memlimit} with that address, so we'll get one page of memory -- a page that contains the address of \texttt{free\_list}. \texttt{syscall\_memlimit} returns the actual new heap end, which is at the end of the allocated page.
 
 \end{document}

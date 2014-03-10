@@ -91,25 +91,17 @@ void tlb_load_store_exception(void)
             if((!odd && entry->V0) || (odd && entry->V1))
             {
                 _tlb_write_random(entry);
-                if(state.asid == 4 && DEBUG)
-                {
-                    kprintf("Pagetable ASID: %d\n", thr->pagetable->ASID);
-                    kprintf("Entry ASID: %d\n", entry->ASID);
-                    kprintf("Thread ID: %d\n", thread_get_current_thread());
-                    //KERNEL_PANIC("ASID 4");
-                }
-
                 return;
             }
             else
             {
                 if(DEBUG) kprintf("Not valid: 0x%8.8x. Odd: %d\n", entry->VPN2, odd);
-                break;
+                KERNEL_PANIC("TLB load or store exception: Invalid page.");
             }
         }
     }
 
-    KERNEL_PANIC("ARRRGH!");
+    KERNEL_PANIC("TLB load or store exception: Page not found.");
 }
 
 void tlb_load_exception(void)

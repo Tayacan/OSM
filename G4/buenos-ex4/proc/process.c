@@ -163,8 +163,7 @@ void process_start(process_id_t pid)
            (USERLAND_STACK_TOP & PAGE_SIZE_MASK) - i*PAGE_SIZE, 1);
   }
 
-  process_table[pid].heap_end = (void*) (USERLAND_STACK_TOP & PAGE_SIZE_MASK) - i*2*PAGE_SIZE - 1;
-  //process_table[pid].heap_end = ...;
+  process_table[pid].heap_end = (void*) (USERLAND_STACK_TOP & PAGE_SIZE_MASK) - i*20*PAGE_SIZE - 1;
 
   /* Put the mapped pages into TLB. Here we again assume that the
      pages fit into the TLB. After writing proper TLB exception

@@ -99,7 +99,6 @@ void* syscall_memlimit(void* heap_end)
         return heap_end;
     }
 
-    // do some things
     current = (uint32_t)current_heap_end;
     diff = (uint32_t)heap_end - current;
     current++;

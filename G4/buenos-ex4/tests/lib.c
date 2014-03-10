@@ -223,6 +223,11 @@ int syscall_sem_v(usr_sem_t* handle)
   return (int)_syscall(SYSCALL_SEM_VACATE, (uint32_t)handle, 0, 0);
 }
 
+int syscall_sem_destroy(usr_sem_t* handle)
+{
+  return (int)_syscall(SYSCALL_SEM_DESTROY, (uint32_t)handle, 0, 0);
+}
+
 /* The following functions are not system calls, but convenient
    library functions inspired by POSIX and the C standard library. */
 
@@ -746,7 +751,7 @@ void heap_init()
   free_list = (free_block_t*) ((uint32_t)free_list + 1);
 
   heap_end = syscall_memlimit(free_list);
-  free_list->size = (int)heap_end - (int)free_list + 1;
+  free_list->size = (int)heap_end - (int)free_list + 1 - sizeof(free_block_t);
   free_list->next = NULL;
 }
 
@@ -754,14 +759,15 @@ void heap_init()
 /* Return a block of at least size bytes, or NULL if no such block 
    can be found.  */
 void *malloc(size_t size) {
+  void *heap_end, *heap_end_p;
   free_block_t *block;
   free_block_t **prev_p; /* Previous link so we can remove an element */
   if (size == 0) {
     return NULL;
   }
 
-  /* Ensure block is big enough for bookkeeping. */
-  size=MAX(MIN_ALLOC_SIZE,size);
+  /* Add space for bookkeeping. */
+  size += sizeof(free_block_t);
   /* Word-align */
   if (size % 4 != 0) {
     size &= ~3;
@@ -773,26 +779,33 @@ void *malloc(size_t size) {
   for (block = free_list, prev_p = &free_list;
        block;
        prev_p = &(block->next), block = block->next) {
-    if ( (int)( block->size - size - sizeof(size_t) ) >= 
-         (int)( MIN_ALLOC_SIZE+sizeof(size_t) ) ) {
+    if ( (int)( block->size - size ) >= 
+         (int)( MIN_ALLOC_SIZE+sizeof(free_block_t) ) ) {
       /* Block is too big, but can be split. */
-      block->size -= size+sizeof(size_t);
       free_block_t *new_block =
-        (free_block_t*)(((byte*)block)+block->size);
-      new_block->size = size+sizeof(size_t);
-      return ((byte*)new_block)+sizeof(size_t);
-    } else if (block->size >= size + sizeof(size_t)) {
+        (free_block_t*)(((byte*)block)+size);
+      new_block->size = block->size - size;
+      new_block->next = block->next;
+      block->size = size - sizeof(free_block_t);
+      *prev_p = new_block;
+      return ((byte*)block)+sizeof(free_block_t);
+    } else if (block->size >= size) {
       /* Block is big enough, but not so big that we can split
          it, so just return it */
       *prev_p = block->next;
-      return ((byte*)block)+sizeof(size_t);
+      return ((byte*)block)+sizeof(free_block_t);
     }
     /* Else, check the next block. */
   }
 
-  if(syscall_memlimit((void*)((int)syscall_memlimit(NULL) + size)) != NULL)
+  heap_end_p = syscall_memlimit(NULL);
+  heap_end = syscall_memlimit((void*)((int)heap_end_p + size));
+
+  if(heap_end != NULL)
   {
-    
+    block = (free_block_t*)((int)prev_p - sizeof(size_t));
+    block->size += (int)heap_end - (int)heap_end_p;
+
     return malloc(size);
   }
 
@@ -804,7 +817,7 @@ void *malloc(size_t size) {
 void free(void *ptr)
 {
   if (ptr != NULL) { /* Freeing NULL is a no-op */
-    free_block_t *block = (free_block_t*)((byte*)ptr-sizeof(size_t));
+    free_block_t *block = (free_block_t*)((byte*)ptr-sizeof(free_block_t));
     free_block_t *cur_block;
     free_block_t *prev_block;
 
@@ -826,7 +839,7 @@ void free(void *ptr)
         if (prev_block != NULL &&
             (size_t)((byte*)block - (byte*)prev_block) == prev_block->size) {
           /* Merge with previous. */
-          prev_block->size += block->size;
+          prev_block->size += block->size + sizeof(free_block_t);
           prev_block->next = cur_block;
           block = prev_block;
         }
@@ -834,7 +847,7 @@ void free(void *ptr)
         if (cur_block != NULL &&
             (size_t)((byte*)cur_block - (byte*)block) == block->size) {
           /* Merge with next. */
-          block->size += cur_block->size;
+          block->size += cur_block->size + sizeof(free_block_t);
           block->next = cur_block->next;
         }
         return;

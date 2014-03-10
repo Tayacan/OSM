@@ -9,6 +9,8 @@ int main(void)
     printf(foo);
 
     free(foo);
+    printf("freeeee!\n");
 
+    syscall_halt();
     return 0;
 }

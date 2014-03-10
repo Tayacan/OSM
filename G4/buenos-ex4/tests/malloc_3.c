@@ -15,5 +15,6 @@ int main(void)
     }
     printf("Wrote a lot of a's.\n");
 
+    syscall_halt();
     return 0;
 }

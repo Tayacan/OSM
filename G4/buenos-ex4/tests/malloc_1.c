@@ -40,5 +40,6 @@ int main(void)
 
     printf(" and freed them.\n");
 
+    syscall_halt();
     return 0;
 }

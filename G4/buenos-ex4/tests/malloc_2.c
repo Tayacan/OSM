@@ -21,5 +21,6 @@ int main(void)
 
     printf("Joined %d processes\n", PROCESSES);
 
+    syscall_halt();
     return 0;
 }

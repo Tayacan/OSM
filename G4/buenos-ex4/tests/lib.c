@@ -741,7 +741,11 @@ void heap_init()
 {
   void* heap_end;
   free_list = syscall_memlimit(NULL);
-  heap_end = syscall_memlimit(++free_list);
+
+  /* Ew, casting-magic - increment with 1 instead of sizeof(free_block_t) */
+  free_list = (free_block_t*) ((uint32_t)free_list + 1);
+
+  heap_end = syscall_memlimit(free_list);
   free_list->size = (int)heap_end - (int)free_list + 1;
   free_list->next = NULL;
 }

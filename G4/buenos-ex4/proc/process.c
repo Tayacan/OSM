@@ -163,6 +163,9 @@ void process_start(process_id_t pid)
            (USERLAND_STACK_TOP & PAGE_SIZE_MASK) - i*PAGE_SIZE, 1);
   }
 
+  process_table[pid].heap_end = (void*) (USERLAND_STACK_TOP & PAGE_SIZE_MASK) - i*2*PAGE_SIZE - 1;
+  //process_table[pid].heap_end = ...;
+
   /* Put the mapped pages into TLB. Here we again assume that the
      pages fit into the TLB. After writing proper TLB exception
      handling this call should be skipped. */
@@ -256,7 +259,6 @@ process_id_t process_spawn(const char* executable)
   process_table[pid].next_zombie = -1;
   process_table[pid].parent = my_pid;
   process_table[pid].children = 0;
-  process_table[pid].heap_end = 0xFFF;
 
   intr_status = _interrupt_disable();
   spinlock_acquire(&process_table_slock);

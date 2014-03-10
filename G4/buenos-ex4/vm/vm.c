@@ -162,6 +162,7 @@ void vm_map(pagetable_t *pagetable,
 		}
 	    } else {
 		if(pagetable->entries[i].V1 == 1) {
+            kprintf("vaddr: 0x%8.8x\n", vaddr);
 		    KERNEL_PANIC("Tried to re-map same virtual page");
 		} else {
 		    /* Map the page on a pair entry */

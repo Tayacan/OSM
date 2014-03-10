@@ -1,0 +1,59 @@
+\documentclass{article}
+%\usepackage{msmath}
+\usepackage{amssymb, amsmath}
+\usepackage[pdftex]{graphicx}
+\usepackage{listings} % code insert
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{wrapfig}
+
+\lstset{
+    breaklines = true,
+    numbers = left,
+    stepnumber = 1,
+    numberstyle=\color{black},
+    showstringspaces=false,
+    language=C,
+    frame=rlTB,
+    rulecolor= \color{blue},
+    basicstyle=\scriptsize\ttfamily\color{red!80!black},
+      keywordstyle=\bfseries\color{blue},
+      commentstyle=\color{green!40!black},
+      identifierstyle=\ttfamily\color{black},
+      stringstyle=\color{yellow!65!black},
+}
+
+\newcommand{\ssection}[1]{
+\addcontentsline{toc}{section}{#1}
+\section*{#1}}
+
+
+\title{G3 - report}
+\author{Ask Neve Gamby \& Maya Saietz}
+
+\begin{document}
+\maketitle
+%
+\section{TLB exceptions}
+%
+We had to handle 3 exceptions: load, store, and modified TLB exceptions. For the modified exception, one would expect to send some form of error to the user or a shutdown of the thread for userland threads. Since neither is possible in the current buenos, we have opted for having the kernel panic. If the kernel tries to write to somewhere it does not have write privileges to, it is very likely to be a bug, and we therefor also kernel panics.
+
+For both the load and store TLB exceptions, we just need to load the corresponding page into the TLB. This is handled by a separate function, that both of them calls. This function first retrieves the exception state and the thread entry of the current thread. It then determines whether the missing page is even or odd. It then performs a linear search through the pagetable based on \texttt{VPN2} (the double page address), and check whether the correct subpage is valid. If the page is valid it writes it to a random position in the TLB table, and if not it kernel panics, for the same reason as for kernel panicking on userland based modified exceptions.
+
+Due to some extensive debuging, a decent amount of debugging code as generated, and after finishing a debuging session the debug code was disabled by use of tests on a compiler defined \texttt{DEBUG} constant.
+%
+\section{Dynamic allocation}
+%
+To implement dynamic allocation, $2$ steps were necessary: first a kernel level allocation of physical space for the pages necessary, and secondly a modification of \texttt{malloc}, \texttt{free} and \texttt{heap\_init}
+%
+\subsection{\texttt{syscall\_memlimit}}
+%
+\texttt{syscall\_memlimit} starts by getting the current process and thread entries. There are several cases. If the argument is \texttt{NULL}, it returns the current heap end, which it gets from the current process entry. If the argument is smaller than the current heap end, it returns \texttt{NULL}. If the argument is equal to the current heap end, it simply returns the argument unchanged.
+
+Finally, if the argument is not \texttt{NULL} and is larger than the current heap end, it allocates enough pages that the argument becomes a pointer to somewhere in the last page. It does this by first calculating the number of pages needed, and then looping that many times. In each iteration, it asks for a physical page and maps it to a virtual page. If there is no free physical page, it returns \texttt{NULL}. It then sets the \texttt{heap\_end} variable of the current process entry to the last byte in the last page, and returns it.
+%
+\subsection{\texttt{malloc} and \texttt{free}}
+%
+A basic implementation of \texttt{malloc} and \texttt{free} were provided beforehand, which used a statically allocated byte array. This means that the heap could not increase in size. The changes necessary was to change this implementation to work using the new heap, which can be dynamically increased, and apply this dynamic increasing. Since no unmapping of physical pages is currently implemented, then \texttt{free} would still only be changing the data structure used by malloc on the heap. The manipulation of a heap in a byte array and on the 
+
+\end{document}

@@ -837,7 +837,7 @@ void free(void *ptr)
         block->next = cur_block;
 
         if (prev_block != NULL &&
-            (size_t)((byte*)block - (byte*)prev_block) == prev_block->size) {
+            (size_t)((byte*)block - (byte*)prev_block) == prev_block->size + sizeof(free_block_t)) {
           /* Merge with previous. */
           prev_block->size += block->size + sizeof(free_block_t);
           prev_block->next = cur_block;
@@ -845,7 +845,7 @@ void free(void *ptr)
         }
 
         if (cur_block != NULL &&
-            (size_t)((byte*)cur_block - (byte*)block) == block->size) {
+            (size_t)((byte*)cur_block - (byte*)block) == block->size + sizeof(free_block_t)) {
           /* Merge with next. */
           block->size += cur_block->size + sizeof(free_block_t);
           block->next = cur_block->next;

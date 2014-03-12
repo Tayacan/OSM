@@ -57,8 +57,7 @@ int syscall_write(uint32_t fd, char *s, int len)
     gcd = (gcd_t *)dev->generic_device;
     return gcd->write(gcd, s, len);
   } else {
-    KERNEL_PANIC("Write syscall not finished yet.");
-    return 0;
+    return vfs_write(fd - 3, s, len);
   }
 }
 
@@ -71,8 +70,7 @@ int syscall_read(uint32_t fd, char *s, int len)
     gcd = (gcd_t *)dev->generic_device;
     return gcd->read(gcd, s, len);
   } else {
-    KERNEL_PANIC("Read syscall not finished yet.");
-    return 0;
+    return vfs_read(fd - 3, s, len);
   }
 }
 
@@ -177,6 +175,21 @@ void syscall_handle(context_t *user_context)
       break;
     case SYSCALL_MEMLIMIT:
       V0 = (int)syscall_memlimit((void*)A1);
+      break;
+    case SYSCALL_OPEN:
+      // TODO
+      break;
+    case SYSCALL_CLOSE:
+      // TODO
+      break;
+    case SYSCALL_CREATE:
+      // TODO
+      break;
+    case SYSCALL_DELETE:
+      // TODO
+      break;
+    case SYSCALL_SEEK:
+      // TODO
       break;
     default:
       KERNEL_PANIC("Unhandled system call\n");

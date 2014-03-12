@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd tests
+make
+cd ..
+./util/tfstool delete fyams.harddisk $1
+./util/tfstool write fyams.harddisk tests/$1 $1

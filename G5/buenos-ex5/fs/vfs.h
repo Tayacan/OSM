@@ -121,6 +121,15 @@ typedef struct fs_struct{
        Returns success value as defined above (VFS_OK, etc.) */
     int (*create)(struct fs_struct *fs, char *filename, int size);
 
+    /* Yay, file size */
+    int (*filesize)(struct fs_struct *fs, char *filename);
+
+    /* and filecount! */
+    int (*filecount)(struct fs_struct *fs);
+
+    /* and FILE!!!1! */
+    int (*file)(struct fs_struct *fs, int index, char *buffer);
+
     /* Function pointer to a function which removes file from the
        filesystem. A pointer to this structure is given as the first
        argument and name of the file to be deleted as the second argument.
@@ -152,6 +161,9 @@ int vfs_read(openfile_t file, void *buffer, int bufsize);
 int vfs_write(openfile_t file, void *buffer, int datasize);
 
 int vfs_create(char *pathname, int size);
+int vfs_filesize(char *pathname);
+int vfs_filecount(char *name);
+int vfs_file(char *name, int index, char *buffer);
 int vfs_remove(char *pathname);
 int vfs_getfree(char *filesystem);
 

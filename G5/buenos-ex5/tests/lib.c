@@ -182,6 +182,21 @@ int syscall_delete(const char *filename)
   return (int)_syscall(SYSCALL_DELETE, (uint32_t)filename, 0, 0);
 }
 
+int syscall_filesize(const char *filename)
+{
+  return (int)_syscall(SYSCALL_FILESIZE, (uint32_t)filename, 0, 0);
+}
+
+int syscall_filecount(const char *name)
+{
+  return (int)_syscall(SYSCALL_FILECOUNT, (uint32_t)name, 0, 0);
+}
+
+int syscall_file(const char *name, int index, char *buffer)
+{
+  return (int)_syscall(SYSCALL_FILE, (uint32_t)name, index, (uint32_t)buffer);
+}
+
 /*
  * A call returns a handle to a userland semaphore identified by the
  * string specified by name, which can then be used by the calling
@@ -821,6 +836,8 @@ void free(void *ptr)
     free_block_t *cur_block;
     free_block_t *prev_block;
 
+    printf("free_list: %8.8x\nheap_end: %8.8x\nblock: %8.8x\n", (uint32_t)free_list, (uint32_t)syscall_memlimit(NULL), (uint32_t)block);
+
     /* Iterate through the free list, which is sorted by
        increasing address, and insert the newly freed block at the
        proper position. */
@@ -834,6 +851,7 @@ void free(void *ptr)
         } else {
           prev_block->next = block;
         }
+        printf("cur_block = %8.8x\n", (uint32_t)cur_block);
         block->next = cur_block;
 
         if (prev_block != NULL &&

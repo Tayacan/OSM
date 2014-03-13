@@ -808,6 +808,141 @@ int vfs_create(char *pathname, int size)
     return ret;
 }
 
+void fix_name(char* dest, char* src)
+{
+    int i, offset;
+    for(i = 0, offset = 0; src[i] != ']' && src[i] != '\0' && i < VFS_NAME_LENGTH; i++)
+    {
+        if(src[i] == '[')
+        {
+            offset++;
+            continue;
+        }
+        dest[i-offset] = src[i];
+    }
+    dest[i-offset] = '\0';
+}
+
+int vfs_filesize(char *pathname)
+{
+    char volumename[VFS_NAME_LENGTH];
+    char filename[VFS_NAME_LENGTH];
+    fs_t *fs = NULL;
+    int ret;
+    
+    if (vfs_start_op() != VFS_OK)
+        return VFS_UNUSABLE;
+
+    if(vfs_parse_pathname(pathname, volumename, filename) != VFS_OK) {
+        vfs_end_op();
+        return VFS_ERROR;
+    }
+
+    semaphore_P(vfs_table.sem);
+
+    fs = vfs_get_filesystem(volumename);
+
+    if(fs == NULL) {
+        semaphore_V(vfs_table.sem);
+        vfs_end_op();
+        return VFS_NO_SUCH_FS;
+    }
+
+    ret = fs->filesize(fs, filename);
+    
+    semaphore_V(vfs_table.sem);
+
+    vfs_end_op();
+    return ret;
+}
+
+int vfs_file(char *name, int index, char *buffer)
+{
+    fs_t *fs = NULL;
+    int ret;
+    char volumename[VFS_NAME_LENGTH];
+
+    if(name == NULL)
+    {
+        semaphore_P(vfs_table.sem);
+        if(vfs_table.filesystems[index].filesystem != NULL)
+        {
+            stringcopy(buffer, vfs_table.filesystems[index].mountpoint, VFS_NAME_LENGTH);
+            semaphore_V(vfs_table.sem);
+            return 0;
+        }
+
+        semaphore_V(vfs_table.sem);
+        return VFS_NO_SUCH_FS;
+    }
+
+    if (vfs_start_op() != VFS_OK)
+        return VFS_UNUSABLE;
+
+    fix_name(volumename, name);
+
+    semaphore_P(vfs_table.sem);
+
+    fs = vfs_get_filesystem(volumename);
+
+    if(fs == NULL) {
+        semaphore_V(vfs_table.sem);
+        vfs_end_op();
+        return VFS_NO_SUCH_FS;
+    }
+
+    ret = fs->file(fs, index, buffer);
+    
+    semaphore_V(vfs_table.sem);
+
+    vfs_end_op();
+    return ret;
+}
+
+int vfs_filecount(char *name)
+{
+    fs_t *fs = NULL;
+    int ret, i;
+    char volumename[VFS_NAME_LENGTH];
+
+    if(name == NULL)
+    {
+        ret = 0;
+        semaphore_P(vfs_table.sem);
+        for(i = 0; i < CONFIG_MAX_FILESYSTEMS; i++)
+        {
+            if(vfs_table.filesystems[i].filesystem != NULL)
+            {
+                ret++;
+            }
+        }
+
+        semaphore_V(vfs_table.sem);
+        return ret;
+    }
+
+    if (vfs_start_op() != VFS_OK)
+        return VFS_UNUSABLE;
+
+    fix_name(volumename, name);
+
+    semaphore_P(vfs_table.sem);
+
+    fs = vfs_get_filesystem(volumename);
+
+    if(fs == NULL) {
+        semaphore_V(vfs_table.sem);
+        vfs_end_op();
+        return VFS_NO_SUCH_FS;
+    }
+
+    ret = fs->filecount(fs);
+    
+    semaphore_V(vfs_table.sem);
+
+    vfs_end_op();
+    return ret;
+}
 
 /**
  * Removes given file from filesystem.

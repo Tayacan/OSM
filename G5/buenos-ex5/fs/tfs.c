@@ -160,14 +160,17 @@ fs_t * tfs_init(gbd_t *disk)
     fs->internal = (void *)tfs;
     stringcopy(fs->volume_name, name, VFS_NAME_LENGTH);
 
-    fs->unmount = tfs_unmount;
-    fs->open    = tfs_open;
-    fs->close   = tfs_close;
-    fs->create  = tfs_create;
-    fs->remove  = tfs_remove;
-    fs->read    = tfs_read;
-    fs->write   = tfs_write;
-    fs->getfree  = tfs_getfree;
+    fs->unmount   = tfs_unmount;
+    fs->open      = tfs_open;
+    fs->close     = tfs_close;
+    fs->create    = tfs_create;
+    fs->remove    = tfs_remove;
+    fs->read      = tfs_read;
+    fs->write     = tfs_write;
+    fs->getfree   = tfs_getfree;
+    fs->filesize  = tfs_filesize;
+    fs->filecount = tfs_filecount;
+    fs->file      = tfs_file;
 
     return fs;
 }
@@ -258,6 +261,94 @@ int tfs_close(fs_t *fs, int fileid)
     fileid = fileid;
 
     return VFS_OK;    
+}
+
+int tfs_filecount(fs_t *fs)
+{
+    int r;
+    int ret = 0;
+    uint32_t i;
+    gbd_request_t req;
+    tfs_t *tfs = (tfs_t*) fs->internal;
+
+    semaphore_P(tfs->lock);
+    
+    req.block     = TFS_DIRECTORY_BLOCK;
+    req.buf       = ADDR_KERNEL_TO_PHYS((uint32_t)tfs->buffer_md);
+    req.sem       = NULL;
+    r = tfs->disk->read_block(tfs->disk,&req);
+    if(r == 0) {
+        /* An error occured during read. */
+        semaphore_V(tfs->lock);
+        return VFS_ERROR;
+    }
+
+    for(i=0;i < TFS_MAX_FILES;i++) {
+        if(tfs->buffer_md[i].inode != 0) {
+            ret++;
+        }
+    }
+
+    semaphore_V(tfs->lock);
+    return ret;
+}
+
+int tfs_file(fs_t *fs, int index, char *buffer)
+{
+    int r;
+    gbd_request_t req;
+    tfs_t *tfs = (tfs_t*) fs->internal;
+
+    semaphore_P(tfs->lock);
+    
+    req.block     = TFS_DIRECTORY_BLOCK;
+    req.buf       = ADDR_KERNEL_TO_PHYS((uint32_t)tfs->buffer_md);
+    req.sem       = NULL;
+    r = tfs->disk->read_block(tfs->disk,&req);
+    if(r == 0) {
+        /* An error occured during read. */
+        semaphore_V(tfs->lock);
+        return VFS_ERROR;
+    }
+
+    if(tfs->buffer_md[index].inode != 0) {
+        stringcopy(buffer, tfs->buffer_md[index].name, VFS_NAME_LENGTH);
+        semaphore_V(tfs->lock);
+        return 0;
+    }
+
+    semaphore_V(tfs->lock);
+    return VFS_NOT_FOUND;
+}
+
+int tfs_filesize(fs_t *fs, char *filename)
+{
+    int r;
+    uint32_t i;
+    gbd_request_t req;
+    tfs_t *tfs = (tfs_t*) fs->internal;
+
+    semaphore_P(tfs->lock);
+    
+    req.block     = TFS_DIRECTORY_BLOCK;
+    req.buf       = ADDR_KERNEL_TO_PHYS((uint32_t)tfs->buffer_md);
+    req.sem       = NULL;
+    r = tfs->disk->read_block(tfs->disk,&req);
+    if(r == 0) {
+        /* An error occured during read. */
+        semaphore_V(tfs->lock);
+        return VFS_ERROR;
+    }
+
+    for(i=0;i < TFS_MAX_FILES;i++) {
+        if(stringcmp(tfs->buffer_md[i].name, filename) == 0) {
+            semaphore_V(tfs->lock);
+            return tfs->buffer_inode->filesize;
+        }
+    }
+
+    semaphore_V(tfs->lock);
+    return VFS_NOT_FOUND;
 }
 
 

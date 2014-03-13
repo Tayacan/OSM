@@ -99,6 +99,7 @@ void user_exception_handle(int exception)
 	KERNEL_PANIC("Breakpoint: not handled yet");
 	break;
     case EXCEPTION_RESVI:
+    kprintf("Thread ID: %d\n", thread_get_current_thread());
 	KERNEL_PANIC("Reserved instruction: not handled yet");
 	break;
     case EXCEPTION_COPROC:

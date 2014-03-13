@@ -90,6 +90,9 @@ int syscall_read(int filehandle, void *buffer, int length);
 int syscall_write(int filehandle, const void *buffer, int length);
 int syscall_create(const char *filename, int size);
 int syscall_delete(const char *filename);
+int syscall_filesize(const char *filename);
+int syscall_filecount(const char *name);
+int syscall_file(const char *name, int index, char *buffer);
 
 int syscall_fork(void (*func)(int), int arg);
 void *syscall_memlimit(void *heap_end);
@@ -116,7 +119,8 @@ void *memcpy(void *dest, const void *src, size_t n);
 #ifdef PROVIDE_BASIC_IO
 int putc(char c);
 int puts(const char* s);
-int getchar(void);
+int getc(void);
+int getc_raw(void);
 ssize_t gets(char *s, size_t size);
 ssize_t readline(char *s, size_t size);
 #endif

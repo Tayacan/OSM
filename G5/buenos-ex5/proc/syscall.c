@@ -177,19 +177,28 @@ void syscall_handle(context_t *user_context)
       V0 = (int)syscall_memlimit((void*)A1);
       break;
     case SYSCALL_OPEN:
-      // TODO
+      V0 = (int)vfs_open((char*)A1) + 3;
       break;
     case SYSCALL_CLOSE:
-      // TODO
+      V0 = vfs_close(A1 - 3);
       break;
     case SYSCALL_CREATE:
-      // TODO
+      V0 = vfs_create((char*)A1, A2);
       break;
     case SYSCALL_DELETE:
-      // TODO
+      V0 = vfs_remove((char*)A1);
       break;
     case SYSCALL_SEEK:
-      // TODO
+      V0 = vfs_seek(A1 - 3, A2);
+      break;
+    case SYSCALL_FILESIZE:
+      V0 = vfs_filesize((char*)A1);
+      break;
+    case SYSCALL_FILECOUNT:
+      V0 = vfs_filecount((char*)A1);
+      break;
+    case SYSCALL_FILE:
+      V0 = vfs_file((char*)A1, A2, (char*)A3);
       break;
     default:
       KERNEL_PANIC("Unhandled system call\n");

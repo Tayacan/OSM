@@ -379,18 +379,25 @@ int cmd_cp(int argc, char** argv) {
     printf("Could not open %s.  Reason: %d\n", filename0, fd_src);
     return 1;
   }
-  if ((fd_dest=syscall_open(filename1)) < 0) {
-    if(syscall_create(filename1, BUFFER_SIZE) < 0) {
-      printf("Could not create %s.\n", filename1);
-      syscall_close(fd_src);
-      return 1;
-    };
 
-    if ((fd_dest=syscall_open(filename1)) < 0) {
-      printf("I give up now!\n");
-      syscall_close(fd_src);
-      return 1;
-    }
+  /* If the file exists, delete it so we can make a new one */
+  if ((fd_dest=syscall_open(filename1)) >= 0) {
+    syscall_close(fd_dest);
+    syscall_delete(filename1);
+  }
+
+  /* Create target file */
+  if(syscall_create(filename1, syscall_filesize(filename0)) < 0) {
+    printf("Could not create %s.\n", filename1);
+    syscall_close(fd_src);
+    return 1;
+  };
+
+  /* Try to open the file we just created */
+  if ((fd_dest=syscall_open(filename1)) < 0) {
+    printf("I give up now!\n");
+    syscall_close(fd_src);
+    return 1;
   }
 
   int rd;
@@ -399,7 +406,7 @@ int cmd_cp(int argc, char** argv) {
     int wr=0, thiswr;
     while (wr < rd) {
       if ((thiswr = syscall_write(fd_dest, buffer+wr, rd-wr)) <= 0) {
-        printf("\nCall to syscall_write() failed.  Reason: %d.\n", wr);
+        printf("\nCall to syscall_write() failed.  Reason: %d.\n", thiswr);
         syscall_close(fd_src);
         syscall_close(fd_dest);
         return 1;

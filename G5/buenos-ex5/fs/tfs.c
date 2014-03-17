@@ -342,6 +342,15 @@ int tfs_filesize(fs_t *fs, char *filename)
 
     for(i=0;i < TFS_MAX_FILES;i++) {
         if(stringcmp(tfs->buffer_md[i].name, filename) == 0) {
+	    req.block = tfs->buffer_md[i].inode;
+	    req.buf   = ADDR_KERNEL_TO_PHYS((uint32_t)tfs->buffer_inode);
+	    req.sem   = NULL;
+	    r = tfs->disk->read_block(tfs->disk, &req);
+	    if(r == 0) {
+		/* An error occured. */
+		semaphore_V(tfs->lock);
+		return VFS_ERROR;
+	    }   
             semaphore_V(tfs->lock);
             return tfs->buffer_inode->filesize;
         }

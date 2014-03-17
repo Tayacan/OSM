@@ -1,0 +1,56 @@
+\documentclass{article}
+%\usepackage{msmath}
+\usepackage{amssymb, amsmath}
+\usepackage[pdftex]{graphicx}
+\usepackage{listings} % code insert
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{wrapfig}
+
+\lstset{
+    breaklines = true,
+    numbers = left,
+    stepnumber = 1,
+    numberstyle=\color{black},
+    showstringspaces=false,
+    language=C,
+    frame=rlTB,
+    rulecolor= \color{blue},
+    basicstyle=\scriptsize\ttfamily\color{red!80!black},
+      keywordstyle=\bfseries\color{blue},
+      commentstyle=\color{green!40!black},
+      identifierstyle=\ttfamily\color{black},
+      stringstyle=\color{yellow!65!black},
+}
+
+\newcommand{\ssection}[1]{
+\addcontentsline{toc}{section}{#1}
+\section*{#1}}
+
+
+\title{G5 - The Arrival of the Unicorns}
+\author{Ask Neve Gamby \& Maya Saietz}
+
+
+\begin{document}
+\maketitle
+
+\section{System calls}
+We needed to create syscalls for the different file system commands. This turned out to just be wrappers for the virtual file system, where all the functions were already implemented. We also offset the file handles by 3 to allow read and write to have handle 0 - 2.
+
+Unfortunately, there are no unicorns in kernel space.
+
+\section{Dancing Unicorns}
+We felt that the handed-out shell suffered from a lack of unicorns and purple-ness, so we decided to make some improvements. After implementing the commands that the assignment asked for (which was fairly trivial), we went off on several tangents.
+
+\begin{enumerate}
+\item Unicorns are way too lazy to write the name of the disk every time they want a file. The Unicorn Shell uses a default disk, so that if no disk is specified, it uses the disk at index 0.
+\item A noble creature like the unicorn should always have a proper welcome. The Unicorn Shell will greet the user with a beautifully rendered dancing unicorn in a lovely shade of purple.
+\item Unicorns like to have things exactly the way they want them. The described version of \texttt{ls} is far too limited, so we have extended the command with several flags. Run \texttt{ls -h} in the Unicorn Shell for more details.
+\item Unicorns are very organized creatures, who like to know the details about their files. We have implemented a new system call, \texttt{syscall\_filesize}, which returns the size of a file in bytes.
+\end{enumerate}
+
+\section{Extras}
+Unicorns like to get a little extra for their money. This version of Buenos comes with a fabulous four-in-a-row game, free of charge!
+
+\end{document}
